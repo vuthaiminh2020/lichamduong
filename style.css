@@ -18,10 +18,6 @@ body {
 
 .main-wrapper {
     width: 100%;
-    
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
 }
 
 /* Panel chi tiết */
@@ -91,26 +87,60 @@ body {
 }
 
 .day-cell {
-    aspect-ratio: 1/1.2;
-    border-right: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
-    padding: 5px;
-    position: relative;
-    cursor: pointer;
+    min-height: 35px; /* Tăng chiều cao một chút để chứa text */
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
+    padding: 4px;
+    overflow: hidden;
 }
 
-.solar-num { font-size: 18px; font-weight: bold; }
-.lunar-num { font-size: 11px; color: #888; }
+.solar-num { 
+    font-size: 18px; 
+    font-weight: bold; 
+    margin-top: 2px;
+}
+
+/* Màu đỏ cho ngày Chủ Nhật và ngày Lễ */
+.weekend .solar-num, 
+.day-cell:nth-child(7n) .solar-num,
+.anniv-today .solar-num {
+    color: var(--holiday-red);
+}
+
+.lunar-num { 
+    font-size: 11px; 
+    color: #888; 
+    margin-bottom: 2px;
+}
+
+/* Tiêu đề sự kiện nhỏ trong ô lịch tháng */
+.event-title-mini {
+    font-size: 10px;
+    color: var(--holiday-red);
+    text-align: center;
+    line-height: 1.2;
+    margin-top: 2px;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Hiển thị tối đa 2 dòng */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Ngày sắp có sự kiện */
+.anniv-soon {
+    background-color: #f0f7ff;
+    border: 1px dashed var(--soon-blue);
+}
 
 /* Trạng thái đặc biệt */
 .is-today { background-color: var(--bg-current) !important; }
 .is-selected { background-color: var(--bg-selected) !important; border: 1.5px solid #fbc02d; }
 
 .anniv-today { color: var(--holiday-red); border-top: 2px solid var(--holiday-red); }
-.anniv-soon { border-top: 2px dashed var(--soon-blue); }
+
 
 .event-dot {
     width: 4px;
@@ -119,3 +149,25 @@ body {
     border-radius: 50%;
     margin-top: 2px;
 }
+
+/* --- Các mã CSS cũ được giữ lại và bổ sung thêm --- */
+
+/* Hiệu ứng chuyển động khi đổi tháng */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.calendar-grid.animate {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+/* Điều chỉnh ô ngày để hiển thị sự kiện */
+
+

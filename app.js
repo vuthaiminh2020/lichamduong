@@ -60,8 +60,10 @@ function convertSolar2Lunar(dd, mm, yy) {
 */
 // --- PHẦN 2: LOGIC ỨNG DỤNG ---
 
+/* --- PHẦN LOGIC THUẬT TOÁN (Giữ nguyên các hàm jdFromDate, getCanChiDay, getGioHoangDao, convertSolar2Lunar đã gửi ở Turn trước) --- */
+
 let anniversaries = [];
-const todayLocal = new Date(); // Lấy ngày thực tế địa phương
+const todayLocal = new Date();
 let viewMonth = todayLocal.getMonth();
 let viewYear = todayLocal.getFullYear();
 
@@ -71,77 +73,68 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('nextBtn').onclick = () => changeMonth(1);
 });
 
-async function loadEventsFromXML() {
-    try {
-        const res = await fetch('events.xml');
-        const text = await res.text();
-        const xml = new DOMParser().parseFromString(text, "text/xml");
-        const items = xml.getElementsByTagName("event");
-        
-        anniversaries = Array.from(items).map(node => ({
-            type: node.getElementsByTagName("type")[0].textContent,
-            date: node.getElementsByTagName("date")[0].textContent,
-            title: node.getElementsByTagName("title")[0].textContent,
-            icon: node.getElementsByTagName("icon")[0]?.textContent || "📌"
-        }));
-        
-        renderCalendar(viewMonth, viewYear);
-        updateDetails(todayLocal.getDate(), todayLocal.getMonth(), todayLocal.getFullYear());
-    } catch (e) {
-        console.error("Lỗi tải XML:", e);
-        renderCalendar(viewMonth, viewYear);
-    }
+// Hàm đổi tháng có kèm hiệu ứng
+function changeMonth(step) {
+    viewMonth += step;
+    if(viewMonth > 11) { viewMonth = 0; viewYear++; }
+    if(viewMonth < 0) { viewMonth = 11; viewYear--; }
+    
+    const grid = document.getElementById('calendarGrid');
+    // Kích hoạt hiệu ứng animation bằng cách xóa và thêm lại class
+    grid.classList.remove('animate');
+    void grid.offsetWidth; // Trigger reflow để restart animation
+    grid.classList.add('animate');
+    
+    renderCalendar(viewMonth, viewYear);
 }
 
+// Render lịch tháng
 function renderCalendar(m, y) {
     const grid = document.getElementById('calendarGrid');
     document.getElementById('monthTitle').innerText = `THÁNG ${(m + 1).toString().padStart(2, '0')} - ${y}`;
     
-    // Xóa các ngày cũ
     document.querySelectorAll('.day-cell').forEach(c => c.remove());
     
     const firstDay = new Date(y, m, 1).getDay();
     const totalDays = new Date(y, m + 1, 0).getDate();
     const offset = (firstDay === 0) ? 6 : firstDay - 1;
 
-    // Tạo các ô trống
+    // Ô trống đầu tháng
     for(let i=0; i<offset; i++) {
         const empty = document.createElement('div');
         empty.className = 'day-cell empty';
         grid.appendChild(empty);
     }
 
-    // Tạo các ngày trong tháng
+    // Tạo các ngày
     for(let d=1; d<=totalDays; d++) {
         const cell = document.createElement('div');
         cell.className = 'day-cell';
+        
         const lunar = convertSolar2Lunar(d, m + 1, y,timezone);
-        
-		// Lọc sự kiện cho ngày này
-		const solarStr = `${d.toString().padStart(2,'0')}/${(m+1).toString().padStart(2,'0')}`;
-		const lunarStr = `${lunar[0].toString().padStart(2,'0')}/${lunar[1].toString().padStart(2,'0')}`;
-		const dayEvents = anniversaries.filter(a => (a.type==='dương' && a.date===solarStr) || (a.type==='âm' && a.date===lunarStr));
-        
-		// Tô màu xanh lá nhạt cho ngày hiện tại
+        const eventStatus = checkEvents(d, m, y, lunar[0], lunar[1]);
+
+        // Đánh dấu ngày hiện tại
         if(d === todayLocal.getDate() && m === todayLocal.getMonth() && y === todayLocal.getFullYear()) {
             cell.classList.add('is-today');
         }
 
-        cell.innerHTML = `
+        // Nội dung cơ bản: Ngày dương và Ngày âm
+        let cellHTML = `
             <span class="solar-num">${d}</span>
-            <span class="lunar-num">${lunar[0]}</span>
-			<span class="lunar-num">${dayEvents.map(e => `<p style="color:red"><b>Sự kiện:</b> ${e.icon} ${e.title}</p>`).join('')}</span>
-			
+            <span class="lunar-num">${lunar[0]}/${lunar[1]}</span>
         `;
-        
-        // Kiểm tra sự kiện XML
-        const eventStatus = checkEvents(d, m, y, lunar[0], lunar[1]);
+
+        // THÊM THÔNG TIN EVENT XUỐNG DƯỚI NGÀY ÂM
         if(eventStatus.isToday) {
             cell.classList.add('anniv-today');
-            cell.title = eventStatus.titles.join(', ');
+            // Hiển thị tiêu đề của sự kiện đầu tiên tìm thấy
+            cellHTML += `<div class="event-title-mini">${eventStatus.titles[0]}</div>`;
         } else if(eventStatus.isSoon) {
             cell.classList.add('anniv-soon');
         }
+
+        cell.innerHTML = cellHTML;
 
         cell.onclick = () => {
             document.querySelectorAll('.day-cell').forEach(c => c.classList.remove('is-selected'));
@@ -152,19 +145,20 @@ function renderCalendar(m, y) {
     }
 }
 
+// Kiểm tra sự kiện từ XML
 function checkEvents(d, m, y, ld, lm) {
     const solarStr = `${d.toString().padStart(2,'0')}/${(m+1).toString().padStart(2,'0')}`;
     const lunarStr = `${ld.toString().padStart(2,'0')}/${lm.toString().padStart(2,'0')}`;
     
-    // Tính ngày mai để xét "Sắp đến"
-    const tomorrow = new Date(y, m, d + 1);
-    const tmS = `${tomorrow.getDate().toString().padStart(2,'0')}/${(tomorrow.getMonth()+1).toString().padStart(2,'0')}`;
-
+    // Tìm sự kiện trùng ngày
     const matchingEvents = anniversaries.filter(a => 
         (a.type === 'dương' && a.date === solarStr) || 
         (a.type === 'âm' && a.date === lunarStr)
     );
 
+    // Kiểm tra "Sắp đến" (trước 1 ngày dương lịch)
+    const tomorrow = new Date(y, m, d + 1);
+    const tmS = `${tomorrow.getDate().toString().padStart(2,'0')}/${(tomorrow.getMonth()+1).toString().padStart(2,'0')}`;
     const isSoon = anniversaries.some(a => (a.type === 'dương' && a.date === tmS));
     
     return { 
@@ -174,13 +168,12 @@ function checkEvents(d, m, y, ld, lm) {
     };
 }
 
-// Cập nhật thông tin chi tiết phía dưới lịch
+// Cập nhật bảng chi tiết phía trên
 function updateDetails(d, m, y) {
     const lunar = convertSolar2Lunar(d, m + 1, y,timezone);
     const canchi = getCanChiDay(d, m + 1, y);
     const ghd = getGioHoangDao(canchi.chi);
     
-    // Lọc sự kiện cho ngày này
     const solarStr = `${d.toString().padStart(2,'0')}/${(m+1).toString().padStart(2,'0')}`;
     const lunarStr = `${lunar[0].toString().padStart(2,'0')}/${lunar[1].toString().padStart(2,'0')}`;
     const dayEvents = anniversaries.filter(a => (a.type==='dương' && a.date===solarStr) || (a.type==='âm' && a.date===lunarStr));
@@ -200,20 +193,37 @@ function updateDetails(d, m, y) {
             </div>
         </div>
         <div class="extra-info">
-            <div style="color:#d32f2f; font-weight:bold; text-align:center; margin-bottom:10px;">
+            <div style="color:#d32f2f; font-weight:bold; text-align:center; margin-bottom:10px; text-transform:uppercase;">
                 Ngày ${canchi.full}
             </div>
-            ${dayEvents.map(e => `<p style="color:red"><b>Sự kiện:</b> ${e.icon} ${e.title}</p>`).join('')}
-            <p><b>Mệnh ngày:</b> Phú đăng hỏa</p>
+            ${dayEvents.length > 0 ? 
+                dayEvents.map(e => `<p style="color:#d32f2f"><b>Sự kiện:</b> ${e.icon} ${e.title}</p>`).join('') : 
+                ''}
             <p><b>Giờ hoàng đạo:</b> ${ghd}</p>
             <p><b>Tuổi xung:</b> Nhâm Tuất, Canh Tuất, Canh Thìn</p>
         </div>
     `;
 }
 
-function changeMonth(step) {
-    viewMonth += step;
-    if(viewMonth > 11) { viewMonth = 0; viewYear++; }
-    if(viewMonth < 0) { viewMonth = 11; viewYear--; }
-    renderCalendar(viewMonth, viewYear);
+// Tải dữ liệu XML
+async function loadEventsFromXML() {
+    try {
+        const res = await fetch('events.xml');
+        const text = await res.text();
+        const xml = new DOMParser().parseFromString(text, "text/xml");
+        const items = xml.getElementsByTagName("event");
+        
+        anniversaries = Array.from(items).map(node => ({
+            type: node.getElementsByTagName("type")[0].textContent,
+            date: node.getElementsByTagName("date")[0].textContent,
+            title: node.getElementsByTagName("title")[0].textContent,
+            icon: node.getElementsByTagName("icon")[0]?.textContent || "📌"
+        }));
+        
+        renderCalendar(viewMonth, viewYear);
+        updateDetails(todayLocal.getDate(), todayLocal.getMonth(), todayLocal.getFullYear());
+    } catch (e) {
+        console.error("XML Load Error", e);
+        renderCalendar(viewMonth, viewYear);
+    }
 }
