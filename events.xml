@@ -1,42 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<events>
-    <event>
-        <type>âm</type>
-        <date>24/03</date>
-        <title>Ngày Giỗ Ông Nội</title>
-        <icon>🌕</icon>
+ <event>
+        <type>dương</type>
+        <date>15/01</date>
+        <title>Kỷ niệm ngày cưới Minh Quy</title>
+        <icon>❤️</icon>
     </event>
-	<event>
-        <type>âm</type>
-        <date>27/11</date>
-        <title>Ngày Giỗ Bà Nội 2</title>
-        <icon>🌕</icon>
-    </event>
-		<event>
-        <type>âm</type>
-        <date>14/10</date>
-        <title>Ngày Giỗ Bà Nội 1</title>
-        <icon>🌕</icon>
-    </event>
-		<event>
-        <type>âm</type>
-        <date>12/07</date>
-        <title>Ngày Giỗ Bác Huy</title>
-        <icon>🌕</icon>
-    </event>
-		<event>
-        <type>âm</type>
-        <date>11/03</date>
-        <title>Ngày Giỗ Bà The</title>
-        <icon>🌕</icon>
-    </event>
-    <event>
-        <type>âm</type>
-        <date>08/06</date>
-        <title>Ngày Giỗ Ba Phú</title>
-        <icon>🌕</icon>
-    </event>
-    <event>
+  <event>
         <type>dương</type>
         <date>14/12</date>
         <title>Sinh nhật Tui VŨ THÁI MINH</title>
@@ -61,4 +30,42 @@
         <title>Sinh nhật mẹ Khanh</title>
         <icon>🌹</icon>
     </event>
+<events>
+    <event>
+        <type>âm</type>
+        <date>24/03</date>
+        <title>Ngày Giỗ Ông Nội</title>
+        <icon>🌕</icon>
+    </event>
+	<event>
+        <type>âm</type>
+        <date>27/11</date>
+        <title>Ngày Giỗ Bà Nội</title>
+        <icon>🌕</icon>
+    </event>
+<event>
+        <type>âm</type>
+        <date>14/10</date>
+        <title>Ngày Giỗ Bà Nội 1</title>
+        <icon>🌕</icon>
+    </event>
+<event>
+        <type>âm</type>
+        <date>12/07</date>
+        <title>Ngày Giỗ Bác Huy</title>
+        <icon>🌕</icon>
+    </event>
+		<event>
+        <type>âm</type>
+        <date>11/03</date>
+        <title>Ngày Giỗ Bà The</title>
+        <icon>🌕</icon>
+    </event>
+    <event>
+        <type>âm</type>
+        <date>08/06</date>
+        <title>Ngày Giỗ Ba Phú</title>
+        <icon>🌕</icon>
+    </event>
+  
 </events>
