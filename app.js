@@ -60,6 +60,9 @@ function getSolarTerm(dayNumber, timeZone) {
 function getYearCanChi(year) {
 	return CAN[(year + 6) % 10] + ' ' + CHI[(year + 8) % 12];
 }
+function getCanHourd(jdn) {
+	return CAN[((jdn - 1) * 2) % 10];
+}
 /*
  * Hàm convertSolar2Lunar chuẩn (Rút gọn cho mục đích hiển thị UI)
  * Trong thực tế, bạn nên link tới file lunar.js đầy đủ để có ngày nhuận chính xác.
@@ -201,7 +204,11 @@ function updateDetails(d, m, y) {
     const lunarStr = `${lunar[0].toString().padStart(2,'0')}/${lunar[1].toString().padStart(2,'0')}`;
     const dayEvents = anniversaries.filter(a => (a.type==='dương' && a.date===solarStr) || (a.type==='âm' && a.date===lunarStr));
 	const yearlunar = getYearCanChi(lunar[2]);
-    const detailBox = document.getElementById('dateDetails');
+	const ccmonth = CAN[(lunar[2] * 12 + lunar[1] + 3) % 10] + ' ' + CHI[(lunar[1] + 1) % 12];
+	const ccdate = CAN[(jd + 9) % 10] + ' ' + CHI[(jd + 1) % 12];
+	const cchour = getCanHourd(jd) + ' ' + CHI[0];
+    
+	const detailBox = document.getElementById('dateDetails');
     detailBox.innerHTML = `
         <div class="details-row">
             <div>
@@ -217,13 +224,13 @@ function updateDetails(d, m, y) {
         </div>
         <div class="extra-info">
             <div style="color:#d32f2f; font-weight:bold; text-align:center; margin-bottom:10px; text-transform:uppercase;">
-                Ngày ${canchi.full} - ${tietkhi}
+                Ngày ${canchi.full} - Tháng ${ccmonth} - Giờ ${cchour}
             </div>
             ${dayEvents.length > 0 ? 
                 dayEvents.map(e => `<p style="color:#d32f2f"><b>Sự kiện:</b> ${e.icon} ${e.title}</p>`).join('') : 
                 ''}
             <p><b>Giờ hoàng đạo:</b> ${ghd}</p>
-            <p><b>Tuổi xung:</b> Nhâm Tuất, Canh Tuất, Canh Thìn</p>
+            <p><b>Tiết khí: ${tietkhi}</b></p>
         </div>
     `;
 }
