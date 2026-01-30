@@ -1,72 +1,23 @@
-<?xml version="1.0" encoding="UTF-8"?>
- <events>
- <event>
-        <type>dương</type>
-        <date>15/01</date>
-        <title>Kỷ niệm ngày cưới Minh Quy</title>
-        <icon>❤️</icon>
-    </event>
-  <event>
-        <type>dương</type>
-        <date>14/12</date>
-        <title>Sinh nhật Tui VŨ THÁI MINH</title>
-        <icon>🏔️</icon>
-    </event>
-
-    <event>
-        <type>dương</type>
-        <date>28/07</date>
-        <title>Sinh nhật Vợ</title>
-        <icon>🎉</icon>
-    </event>
-    <event>
-        <type>dương</type>
-        <date>12/07</date>
-        <title>Sinh nhật Cà Chua VŨ MINH BẢO NGỌC</title>
-        <icon>💘</icon>
-    </event>
-        <event>
-        <type>dương</type>
-        <date>04/03</date>
-        <title>Sinh nhật mẹ Khanh</title>
-        <icon>🌹</icon>
-    </event>
-
-    <event>
-        <type>âm</type>
-        <date>24/03</date>
-        <title>Ngày Giỗ Ông Nội</title>
-        <icon>🌕</icon>
-    </event>
-	<event>
-        <type>âm</type>
-        <date>27/11</date>
-        <title>Ngày Giỗ Bà Nội</title>
-        <icon>🌕</icon>
-    </event>
-<event>
-        <type>âm</type>
-        <date>14/10</date>
-        <title>Ngày Giỗ Bà Nội 1</title>
-        <icon>🌕</icon>
-    </event>
-<event>
-        <type>âm</type>
-        <date>12/07</date>
-        <title>Ngày Giỗ Bác Huy</title>
-        <icon>🌕</icon>
-    </event>
-		<event>
-        <type>âm</type>
-        <date>11/03</date>
-        <title>Ngày Giỗ Bà The</title>
-        <icon>🌕</icon>
-    </event>
-    <event>
-        <type>âm</type>
-        <date>08/06</date>
-        <title>Ngày Giỗ Ba Phú</title>
-        <icon>🌕</icon>
-    </event>
-  
+<?xmlversion="1.0"encoding="UTF-8"?>
+<events>
+<event><type>dương</type><date>15/01</date><title>Kỷ niệm ngày cưới Minh Quy</title><icon>❤️</icon></event>
+<event><type>dương</type><date>14/12</date><title>Sinh nhật Tui VŨ THÁI MINH</title><icon>🏔️</icon></event>
+<event><type>dương</type><date>28/07</date><title>Sinh nhật Vợ</title><icon>🎉</icon></event>
+<event><type>dương</type><date>12/07</date><title>Sinhnhật Cà Chua VŨ MINH BẢO NGỌC</title><icon>💘</icon></event>
+<event><type>dương</type><date>04/03</date><title>Sinh nhật mẹ Khanh</title><icon>🌹</icon></event>
+<event><type>âm</type><date>24/03</date><title>Ngày Giỗ Ông Nội</title><icon>🌕</icon></event>
+<event><type>âm</type><date>27/11</date><title>Ngày Giỗ Bà Nội</title><icon>🌕</icon></event>
+<event><type>âm</type><date>14/10</date><title>Ngày Giỗ Bà Nội1</title><icon>🌕</icon></event>
+<event><type>âm</type><date>12/07</date><title>Ngày Giỗ Bác Huy</title><icon>🌕</icon></event>
+<event><type>âm</type><date>11/03</date><title>Ngày Giỗ Bà The</title><icon>🌕</icon></event>
+<event><type>âm</type><date>08/06</date><title>Ngày Giỗ Ba Phú</title><icon>🌕</icon></event>
+<event><type>âm</type><date>30/12</date><title>30 Tháng Chạp</title><icon>🏔️</icon></event>
+<event><type>âm</type><date>01/01</date><title>Mùng 1 Tết Nguyên Đán</title><icon>🏔️</icon></event>
+<event><type>âm</type><date>15/01</date><title>Rằm tháng Giêng</title><icon>🏔️</icon></event>
+<event><type>âm</type><date>10/03</date><title>Giỗ Tổ Hùng Vương</title><icon>🏔️</icon></event>
+<event><type>âm</type><date>15/04</date><title>Lễ Phật Đản</title><icon>🏔️</icon></event>
+<event><type>âm</type><date>05/05</date><title>Tết Đoan Ngọ</title><icon>🏔️</icon></event>
+<event><type>âm</type><date>15/07</date><title>Vu Lan</title><icon>🏔️</icon></event>
+<event><type>âm</type><date>15/08</date><title>Tết Trung Thu (Rằm tháng 8)</title><icon>🏔️</icon></event>
+<event><type>âm</type><date>23/12</date><title>Ông Táo chầu trời</title><icon>🏔️</icon></event>
 </events>
