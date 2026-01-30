@@ -8,7 +8,11 @@
 
 const CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
 const CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
-const timezone=7;
+const TIETKHI = ["Xuân phân", "Thanh minh", "Cốc vũ", "Lập hạ", "Tiểu mãn", "Mang chủng",
+	"Hạ chí", "Tiểu thử", "Đại thử", "Lập thu", "Xử thử", "Bạch lộ",
+	"Thu phân", "Hàn lộ", "Sương giáng", "Lập đông", "Tiểu tuyết", "Đại tuyết",
+	"Đông chí", "Tiểu hàn", "Đại hàn", "Lập xuân", "Vũ Thủy", "Kinh trập"];
+const timezone=7.0;
 // Hàm tính số ngày từ 01/01/0001 để làm mốc chuyển đổi
 function jdFromDate(d, m, y) {
     let a = Math.floor((14 - m) / 12);
@@ -28,16 +32,34 @@ function getCanChiDay(d, m, y) {
 // Hàm lấy Giờ Hoàng Đạo dựa trên Chi của ngày
 function getGioHoangDao(chiDay) {
     const gioHDMap = {
-        "Tý": "Tý, Sửu, Mão, Ngọ, Thân, Dậu", "Sửu": "Dần, Mão, Tỵ, Thân, Tuất, Hợi",
-        "Dần": "Tý, Sửu, Thìn, Tỵ, Mùi, Tuất", "Mão": "Tý, Sửu, Dần, Ngọ, Mùi, Dậu",
-        "Thìn": "Dần, Thìn, Tỵ, Thân, Dậu, Hợi", "Tỵ": "Sửu, Mão, Tỵ, Ngọ, Thân, Tuất",
-        "Ngọ": "Tý, Dần, Mão, Ngọ, Thân, Tuất", "Mùi": "Dần, Mão, Tỵ, Mùi, Dậu, Hợi",
-        "Thân": "Tý, Sửu, Thìn, Tỵ, Mùi, Tuất", "Dậu": "Tý, Sửu, Dần, Ngọ, Mùi, Dậu",
-        "Tuất": "Dần, Thìn, Tỵ, Thân, Dậu, Hợi", "Hợi": "Sửu, Mão, Tỵ, Ngọ, Thân, Tuất"
+        "Tý": "Tý (23h-1h), Sửu (1h-3h), Mão (5h-7h), Ngọ (11h-13h), Thân (15h-17h), Dậu (17h-19h)", 
+		"Sửu": "Dần (3h-5h), Mão (5h-7h), Tỵ (9h-11h), Thân (15h-17h), Tuất (19h-21h), Hợi (21h-23h)", 
+        "Dần": "Tý (23h-1h), Sửu (1h-3h), Thìn (7h-9h), Tỵ (9h-11h), Mùi (13h-15h), Tuất (19h-21h)", 
+		"Mão": "Tý (23h-1h), Sửu (1h-3h), Dần (3h-5h), Ngọ (11h-13h), Mùi (13h-15h), Dậu (17h-19h)", 
+        "Thìn": "Dần (3h-5h), Thìn (7h-9h), Tỵ (9h-11h), Thân (15h-17h), Dậu (17h-19h), Hợi (21h-23h)", 
+		"Tỵ": "Sửu (1h-3h), Mão (5h-7h), Tỵ (9h-11h), Ngọ (11h-13h), Thân (15h-17h), Tuất (19h-21h)", 
+        "Ngọ": "Tý (23h-1h), Dần (3h-5h), Mão (5h-7h), Ngọ (11h-13h), Thân (15h-17h), Tuất (19h-21h)", 
+		"Mùi": "Dần (3h-5h), Mão (5h-7h), Tỵ (9h-11h), Mùi (13h-15h), Dậu (17h-19h), Hợi (21h-23h)",
+        "Thân": "Tý (23h-1h), Sửu (1h-3h), Thìn (7h-9h), Tỵ (9h-11h), Mùi (13h-15h), Tuất (19h-21h)", 
+		"Dậu": "Tý (23h-1h), Sửu (1h-3h), Dần (3h-5h), Ngọ (11h-13h), Mùi (13h-15h), Dậu (17h-19h)",
+        "Tuất": "Dần (3h-5h), Thìn (7h-9h), Tỵ (9h-11h), Thân (15h-17h), Dậu (17h-19h), Hợi (21h-23h)", 
+		"Hợi": "Sửu (1h-3h), Mão (5h-7h), Tỵ (9h-11h), Ngọ (11h-13h), Thân (15h-17h), Tuất (19h-21h)"
     };
     return gioHDMap[chiDay] || "";
 }
-
+/* Compute the sun segment at start (00:00) of the day with the given integral Julian day number.
+ * The time zone if the time difference between local time and UTC: 7.0 for UTC+7:00.
+ * The function returns a number between 0 and 23.
+ * From the day after March equinox and the 1st major term after March equinox, 0 is returned.
+ * After that, return 1, 2, 3 ...
+ */
+function getSolarTerm(dayNumber, timeZone) {
+	return INT((SunLongitude(dayNumber - 0.5 - timeZone / 24.0) / PI) * 12);
+}
+//// Năm âm lịch 
+function getYearCanChi(year) {
+	return CAN[(year + 6) % 10] + ' ' + CHI[(year + 8) % 12];
+}
 /*
  * Hàm convertSolar2Lunar chuẩn (Rút gọn cho mục đích hiển thị UI)
  * Trong thực tế, bạn nên link tới file lunar.js đầy đủ để có ngày nhuận chính xác.
@@ -170,14 +192,15 @@ function checkEvents(d, m, y, ld, lm) {
 
 // Cập nhật bảng chi tiết phía trên
 function updateDetails(d, m, y) {
+	const jd = jdFromDate(d, m + 1, y);
     const lunar = convertSolar2Lunar(d, m + 1, y,timezone);
     const canchi = getCanChiDay(d, m + 1, y);
     const ghd = getGioHoangDao(canchi.chi);
-    
+    const tietkhi = TIETKHI[getSolarTerm(jd+1, timezone)];
     const solarStr = `${d.toString().padStart(2,'0')}/${(m+1).toString().padStart(2,'0')}`;
     const lunarStr = `${lunar[0].toString().padStart(2,'0')}/${lunar[1].toString().padStart(2,'0')}`;
     const dayEvents = anniversaries.filter(a => (a.type==='dương' && a.date===solarStr) || (a.type==='âm' && a.date===lunarStr));
-
+	const yearlunar = getYearCanChi(lunar[2]);
     const detailBox = document.getElementById('dateDetails');
     detailBox.innerHTML = `
         <div class="details-row">
@@ -189,12 +212,12 @@ function updateDetails(d, m, y) {
             <div>
                 <div class="label">Âm lịch</div>
                 <div class="big-date">${lunar[0]}</div>
-                <div>Tháng ${lunar[1]} năm Ất Tỵ</div>
+                <div>Tháng ${lunar[1]} năm ${yearlunar}</div>
             </div>
         </div>
         <div class="extra-info">
             <div style="color:#d32f2f; font-weight:bold; text-align:center; margin-bottom:10px; text-transform:uppercase;">
-                Ngày ${canchi.full}
+                Ngày ${canchi.full} - ${tietkhi}
             </div>
             ${dayEvents.length > 0 ? 
                 dayEvents.map(e => `<p style="color:#d32f2f"><b>Sự kiện:</b> ${e.icon} ${e.title}</p>`).join('') : 
