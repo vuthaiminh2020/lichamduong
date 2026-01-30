@@ -1,173 +1,48 @@
 :root {
     --primary-green: #4caf50;
     --dark-green: #388e3c;
-    --bg-current: #e8f5e9; /* Xanh lá nhạt cho ngày hiện tại */
-    --bg-selected: #fff9c4; /* Vàng nhạt cho ngày đang chọn */
-    --holiday-red: #d32f2f;
-    --soon-blue: #1976d2;
+    --bg-today: #e8f5e9;    /* Xanh lá nhạt */
+    --bg-selected: #fff9c4; /* Vàng nhạt khi click */
+    --text-red: #d32f2f;
 }
 
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f0f2f5;
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-    margin: 0;
-}
+body { font-family: 'Arial', sans-serif; background: #f5f5f5; display: flex; justify-content: center; padding: 20px; margin: 0; }
+.main-container { width: 100%; max-width: 450px; }
 
-.main-wrapper {
-    width: 100%;
-}
+/* Chi tiết phía trên */
+.details-panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 20px; text-align: center; }
+.details-row { display: flex; justify-content: space-around; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px; }
+.big-date { font-size: 55px; font-weight: bold; color: var(--primary-green); line-height: 1; }
+.label { font-size: 13px; color: #777; margin-bottom: 5px; }
+.extra-info { text-align: left; font-size: 14px; line-height: 1.6; }
 
-/* Panel chi tiết */
-.details-panel {
-    background: #fff;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    text-align: center;
-}
+/* Lịch tháng */
+.calendar-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.calendar-header { background: var(--primary-green); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+.nav-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 12px; border-radius: 15px; cursor: pointer; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+.calendar-grid.animate { animation: fadeInUp 0.4s ease-out; }
 
-.details-row {
-    display: flex;
-    justify-content: space-around;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 15px;
-}
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-.big-date { font-size: 50px; font-weight: bold; color: var(--primary-green); margin: 5px 0; }
-.label { font-size: 14px; color: #777; }
+.weekday { text-align: center; padding: 10px 0; font-size: 12px; font-weight: bold; background: #fafafa; border-bottom: 1px solid #eee; }
+.weekend { color: var(--text-red); }
 
-.extra-info {
-    text-align: left;
-    font-size: 14px;
-    margin-top: 15px;
-    line-height: 1.6;
-}
+.day-cell { min-height: 35px; border-right: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; flex-direction: column; align-items: center; padding: 4px; position: relative; }
+.solar-container { display: flex; align-items: center; gap: 3px; }
+.solar-num { font-size: 17px; font-weight: bold; }
+.lunar-num { font-size: 11px; color: #888; }
 
-/* Calendar Card */
-.calendar-card {
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
+/* Dấu chấm Hoàng đạo/Hắc đạo */
+.dot { width: 7px; height: 7px; border-radius: 50%; }
+.dot-hoang-dao { background: #4caf50; } /* Xanh dương */
+.dot-hac-dao { background: #000; }     /* Đen */
 
-.calendar-header {
-    background: var(--primary-green);
-    color: white;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.nav-btn {
-    background: rgba(255,255,255,0.2);
-    border: none;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 20px;
-    cursor: pointer;
-}
-
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-}
-
-.weekday {
-    text-align: center;
-    padding: 10px 0;
-    font-size: 13px;
-    font-weight: bold;
-    color: #666;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.day-cell {
-    min-height: 35px; /* Tăng chiều cao một chút để chứa text */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 4px;
-    overflow: hidden;
-}
-
-.solar-num { 
-    font-size: 18px; 
-    font-weight: bold; 
-    margin-top: 2px;
-}
-
-/* Màu đỏ cho ngày Chủ Nhật và ngày Lễ */
-.weekend .solar-num, 
-.day-cell:nth-child(7n) .solar-num,
-.anniv-today .solar-num {
-    color: var(--holiday-red);
-}
-
-.lunar-num { 
-    font-size: 11px; 
-    color: #888; 
-    margin-bottom: 2px;
-}
-
-/* Tiêu đề sự kiện nhỏ trong ô lịch tháng */
-.event-title-mini {
-    font-size: 10px;
-    color: var(--holiday-red);
-    text-align: center;
-    line-height: 1.2;
-    margin-top: 2px;
-    word-break: break-word;
-    display: -webkit-box;
-    -webkit-line-clamp: 2; /* Hiển thị tối đa 2 dòng */
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-/* Ngày sắp có sự kiện */
-.anniv-soon {
-    background-color: #f0f7ff;
-    border: 1px dashed var(--soon-blue);
-}
+/* Sự kiện trong ô ngày */
+.event-mini { font-size: 9px; color: var(--text-red); text-align: center; margin-top: 2px; line-height: 1.1; max-height: 2.2em; overflow: hidden; }
 
 /* Trạng thái đặc biệt */
-.is-today { background-color: var(--bg-current) !important; }
-.is-selected { background-color: var(--bg-selected) !important; border: 1.5px solid #fbc02d; }
-
-.anniv-today { color: var(--holiday-red); border-top: 2px solid var(--holiday-red); }
-
-
-.event-dot {
-    width: 4px;
-    height: 4px;
-    background: red;
-    border-radius: 50%;
-    margin-top: 2px;
-}
-
-/* --- Các mã CSS cũ được giữ lại và bổ sung thêm --- */
-
-/* Hiệu ứng chuyển động khi đổi tháng */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.calendar-grid.animate {
-    animation: fadeInUp 0.4s ease-out;
-}
-
-/* Điều chỉnh ô ngày để hiển thị sự kiện */
-
-
+.is-today { background-color: var(--bg-today) !important; }
+.is-selected { background-color: var(--bg-selected) !important; border: 1px solid #fbc02d; }
+.anniv-today { border-top: 2px solid var(--text-red); }
+.anniv-soon { border: 1px dashed #2196f3; }

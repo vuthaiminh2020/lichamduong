@@ -12,6 +12,7 @@ const TIETKHI = ["Xuân phân", "Thanh minh", "Cốc vũ", "Lập hạ", "Tiểu
 	"Hạ chí", "Tiểu thử", "Đại thử", "Lập thu", "Xử thử", "Bạch lộ",
 	"Thu phân", "Hàn lộ", "Sương giáng", "Lập đông", "Tiểu tuyết", "Đại tuyết",
 	"Đông chí", "Tiểu hàn", "Đại hàn", "Lập xuân", "Vũ Thủy", "Kinh trập"];
+const GIO_HD = { "Tý": "Dần, Thìn, Tỵ, Thân", "Sửu": "Dần, Mão, Tỵ, Thân", "Dần": "Tý, Sửu, Thìn, Tỵ", "Mão": "Tý, Sửu, Dần, Ngọ", "Thìn": "Dần, Thìn, Tỵ, Thân", "Tỵ": "Sửu, Mão, Tỵ, Ngọ", "Ngọ": "Tý, Dần, Mão, Ngọ", "Mùi": "Dần, Mão, Tỵ, Mùi", "Thân": "Tý, Sửu, Thìn, Tỵ", "Dậu": "Tý, Sửu, Dần, Ngọ", "Tuất": "Dần, Thìn, Tỵ, Thân", "Hợi": "Sửu, Mão, Tỵ, Ngọ" };	
 const timezone=7.0;
 // Hàm tính số ngày từ 01/01/0001 để làm mốc chuyển đổi
 function jdFromDate(d, m, y) {
@@ -47,6 +48,32 @@ function getGioHoangDao(chiDay) {
     };
     return gioHDMap[chiDay] || "";
 }
+function getDayStatus(lMonth, chiDay) {
+    // Danh sách 6 sao Hoàng Đạo (Tốt)
+    const hoangDaoMap = {
+        1: ["Tý", "Sửu", "Tỵ", "Mùi"], 2: ["Dần", "Mão", "Mùi", "Dậu"],
+        3: ["Thìn", "Tỵ", "Dậu", "Hợi"], 4: ["Ngọ", "Mùi", "Hợi", "Sửu"],
+        5: ["Thân", "Dậu", "Sửu", "Mão"], 6: ["Tuất", "Hợi", "Mão", "Tỵ"],
+        7: ["Tý", "Sửu", "Tỵ", "Mùi"], 8: ["Dần", "Mão", "Mùi", "Dậu"],
+        9: ["Thìn", "Tỵ", "Dậu", "Hợi"], 10: ["Ngọ", "Mùi", "Hợi", "Sửu"],
+        11: ["Thân", "Dậu", "Sửu", "Mão"], 12: ["Tuất", "Hợi", "Mão", "Tỵ"]
+    };
+
+    // Danh sách 6 sao Hắc Đạo (Xấu)
+    const hacDaoMap = {
+        1: ["Ngọ", "Mão", "Hợi", "Dậu"], 2: ["Thân", "Tỵ", "Sửu", "Hợi"],
+        3: ["Tuất", "Mùi", "Mão", "Sửu"], 4: ["Tý", "Dậu", "Tỵ", "Mão"],
+        5: ["Dần", "Hợi", "Mùi", "Tỵ"], 6: ["Thìn", "Sửu", "Dậu", "Mùi"],
+        7: ["Ngọ", "Mão", "Hợi", "Dậu"], 8: ["Thân", "Tỵ", "Sửu", "Hợi"],
+        9: ["Tuất", "Mùi", "Mão", "Sửu"], 10: ["Tý", "Dậu", "Tỵ", "Mão"],
+        11: ["Dần", "Hợi", "Mùi", "Tỵ"], 12: ["Thìn", "Sửu", "Dậu", "Mùi"]
+    };
+
+    if (hoangDaoMap[lMonth]?.includes(chiDay)) return "Hoàng đạo";
+    if (hacDaoMap[lMonth]?.includes(chiDay)) return "Hắc đạo";
+    
+    return "Bình thường"; // Trả về bình thường nếu không thuộc 2 danh sách trên
+}
 /* Compute the sun segment at start (00:00) of the day with the given integral Julian day number.
  * The time zone if the time difference between local time and UTC: 7.0 for UTC+7:00.
  * The function returns a number between 0 and 23.
@@ -62,6 +89,12 @@ function getYearCanChi(year) {
 }
 function getCanHourd(jdn) {
 	return CAN[((jdn - 1) * 2) % 10];
+}
+function getCanChi(d, m, y) {
+    const jd = Math.floor(Date.UTC(y, m - 1, d) / 86400000) + 2440588;
+    const can = CAN[(jd + 9) % 10];
+    const chi = CHI[(jd + 1) % 12];
+    return { full: `${can} ${chi}`, chi: chi, can: can };
 }
 /*
  * Hàm convertSolar2Lunar chuẩn (Rút gọn cho mục đích hiển thị UI)
@@ -138,15 +171,24 @@ function renderCalendar(m, y) {
         
         const lunar = convertSolar2Lunar(d, m + 1, y,timezone);
         const eventStatus = checkEvents(d, m, y, lunar[0], lunar[1]);
-
+		const cc = getCanChi(d, m + 1, y);
+		const status_hd = getDayStatus(lunar[1], cc.chi);
         // Đánh dấu ngày hiện tại
         if(d === todayLocal.getDate() && m === todayLocal.getMonth() && y === todayLocal.getFullYear()) {
             cell.classList.add('is-today');
         }
-
+		// Khởi tạo dotHTML là rỗng
+		let dotHTML = ''; 
+		if (status_hd === "Hoàng đạo") {
+			dotHTML = `<span class="dot dot-hoang-dao"></span>`;
+		} else if (status_hd === "Hắc đạo") {
+			dotHTML = `<span class="dot dot-hac-dao"></span>`;
+		}
         // Nội dung cơ bản: Ngày dương và Ngày âm
         let cellHTML = `
-            <span class="solar-num">${d}</span>
+			<div class="solar-container">
+            <span class="solar-num">${d}</span> ${dotHTML}
+			</div>
             <span class="lunar-num">${lunar[0]}/${lunar[1]}</span>
         `;
 
@@ -154,7 +196,7 @@ function renderCalendar(m, y) {
         if(eventStatus.isToday) {
             cell.classList.add('anniv-today');
             // Hiển thị tiêu đề của sự kiện đầu tiên tìm thấy
-            cellHTML += `<div class="event-title-mini">${eventStatus.titles[0]}</div>`;
+            cellHTML += `<div class="event-mini">${eventStatus.titles[0]}</div>`;
         } else if(eventStatus.isSoon) {
             cell.classList.add('anniv-soon');
         }

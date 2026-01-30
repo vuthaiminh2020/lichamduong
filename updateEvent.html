@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cập nhật Sự kiện XML</title>
+    <style>
+        :root {
+            --primary-green: #4caf50;
+            --dark-green: #388e3c;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h2 { color: var(--dark-green); border-bottom: 2px solid var(--primary-green); padding-bottom: 10px; }
+        textarea {
+            width: 100%;
+            height: 400px;
+            margin-top: 15px;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            background-color: #272822;
+            color: #f8f8f2;
+            line-height: 1.5;
+        }
+        .btn-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background-color: var(--primary-green);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover { background-color: var(--dark-green); }
+        .back-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: #666;
+            text-decoration: none;
+        }
+        .back-link:hover { text-decoration: underline; }
+        .note {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #d32f2f;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Quản lý file events.xml</h2>
+    <p>Chỉnh sửa nội dung XML dưới đây để cập nhật danh sách sự kiện.</p>
+    
+    <textarea id="xmlContent" placeholder="Đang tải dữ liệu..."></textarea>
+
+    <div class="note">
+        <b>Lưu ý:</b> Sau khi nhấn "Cập nhật", trình duyệt sẽ tải xuống file <b>events.xml</b>. 
+        Hãy lưu file này đè lên file cũ trong thư mục của bạn để áp dụng thay đổi.
+    </div>
+
+    <div class="btn-group">
+        <button onclick="saveXml()">Cập nhật & Tải xuống</button>
+        <button onclick="loadXml()" style="background-color: #757575;">Khôi phục bản gốc</button>
+    </div>
+
+    <a href="index.html" class="back-link">← Quay lại trang Lịch</a>
+</div>
+
+<script>
+    const XML_FILE = 'events.xml';
+    const textarea = document.getElementById('xmlContent');
+
+    // 1. Load nội dung file XML khi mở trang
+    async function loadXml() {
+        try {
+            const response = await fetch(XML_FILE + '?t=' + new Date().getTime()); // Tránh cache
+            if (!response.ok) throw new Error("Không tìm thấy file events.xml");
+            const text = await response.text();
+            textarea.value = text;
+        } catch (error) {
+            textarea.value = `\n` +
+                             `<events>\n  <event>\n    <type>dương</type>\n    <date>01/01</date>\n    <title>Sự kiện mẫu</title>\n    <icon>📌</icon>\n  </event>\n</events>`;
+            console.error(error);
+        }
+    }
+
+    // 2. Lưu (Tải xuống) file XML mới
+    function saveXml() {
+        const content = textarea.value;
+        const blob = new Blob([content], { type: 'text/xml' });
+        const url = window.URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'events.xml';
+        document.body.appendChild(a);
+        a.click();
+        
+        // Dọn dẹp
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        alert("File 'events.xml' đang được tải xuống. Hãy lưu đè vào file cũ nhé!");
+    }
+
+    // Chạy load khi trang sẵn sàng
+    window.onload = loadXml;
+</script>
+
+</body>
+</html>
