@@ -1,6 +1,7 @@
 /*
  * APP.JS - LỊCH VẠN NIÊN 2026
  * Tích hợp thuật toán Âm lịch Hồ Ngọc Đức chuẩn
+ * Tích hợp bởi Vũ Minh
  */
 
 // --- PHẦN 1: THUẬT TOÁN ÂM LỊCH CHUẨN ---
@@ -278,6 +279,7 @@ function updateDetails(d, m, y) {
 }
 
 // Tải dữ liệu XML
+// Web tĩnh thay thông tin Event để dùng lại
 async function loadEventsFromXML() {
     try {
         const res = await fetch('events.xml');
@@ -298,4 +300,5 @@ async function loadEventsFromXML() {
         console.error("XML Load Error", e);
         renderCalendar(viewMonth, viewYear);
     }
+
 }
